@@ -1,18 +1,21 @@
-// Configuración centralizada para la API de IA (Gemini)
+// Archivo: src/config/ai-config.js
 export const AI_CONFIG = {
-    // Puedes cambiar o inyectar tu API Key de Gemini aquí o vía variable de entorno
-    API_KEY: localStorage.getItem('HACKREADY_GEMINI_KEY') || '',
     DEFAULT_MODEL: 'gemini-1.5-flash',
 
-    setApiKey(key) {
-        if (key && key.trim() !== '') {
-            localStorage.setItem('HACKREADY_GEMINI_KEY', key.trim());
-            return true;
+    getApiKey: () => {
+        // 1. Prioridad: Variable de entorno de Vite (.env)
+        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) {
+            return import.meta.env.VITE_GEMINI_API_KEY;
         }
-        return false;
+        // 2. Respaldo: Almacenamiento local del navegador
+        return localStorage.getItem('GEMINI_API_KEY') || '';
     },
 
-    getApiKey() {
-        return localStorage.getItem('HACKREADY_GEMINI_KEY') || '';
+    setApiKey: (key) => {
+        if (key) {
+            localStorage.setItem('GEMINI_API_KEY', key);
+        } else {
+            localStorage.removeItem('GEMINI_API_KEY');
+        }
     }
 };
