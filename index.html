@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Proyectos de Innovación - HackReady</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .step-active {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .step-completed {
+            border-color: #16a34a;
+            background-color: #f0fdf4;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header Navbar -->
+    <header
+        class="border-b border-slate-800 bg-slate-950 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <i data-lucide="sparkles"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-wide">Fábrica de Proyectos HackReady</h1>
+                <p class="text-xs text-slate-400">Universidad Científica del Sur & Instituto SISE</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="bg-blue-900/50 text-blue-300 text-xs px-3 py-1 rounded-full border border-blue-700">Hackatón
+                Docente 2026</span>
+            <button id="btn-export" onclick="exportProject()"
+                class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                <i data-lucide="download"></i> Exportar Proyecto (.MD)
+            </button>
+        </div>
+    </header>
+
+    <!-- App Layout -->
+    <div class="flex min-h-[calc(100vh-73px)]">
+
+        <!-- Sidebar Stepper -->
+        <aside class="w-80 border-r border-slate-800 bg-slate-950 p-6 flex flex-col justify-between">
+            <div>
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Metodología HackReady
+                </h2>
+                <nav class="space-y-3" id="stepper-nav">
+
+                    <button onclick="goToModule(1)" id="step-btn-1"
+                        class="w-full text-left p-3 rounded-xl border border-blue-600 bg-blue-950/40 flex items-center gap-3 transition">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                            1</div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-200">Reto Map</div>
+                            <div class="text-xs text-slate-400">Lente de Oportunidad</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToModule(2)" id="step-btn-2"
+                        class="w-full text-left p-3 rounded-xl border border-slate-800 bg-slate-900/50 flex items-center gap-3 opacity-60 transition">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm">
+                            2</div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-200">Problem Card</div>
+                            <div class="text-xs text-slate-400">Diagnóstico y Enfoque</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToModule(3)" id="step-btn-3"
+                        class="w-full text-left p-3 rounded-xl border border-slate-800 bg-slate-900/50 flex items-center gap-3 opacity-60 transition">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm">
+                            3</div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-200">Prompt Card</div>
+                            <div class="text-xs text-slate-400">Copiloto Pedagógico</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToModule(4)" id="step-btn-4"
+                        class="w-full text-left p-3 rounded-xl border border-slate-800 bg-slate-900/50 flex items-center gap-3 opacity-60 transition">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm">
+                            4</div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-200">MVP Card</div>
+                            <div class="text-xs text-slate-400">Arquitecto de Prototipos</div>
+                        </div>
+                    </button>
+
+                    <button onclick="goToModule(5)" id="step-btn-5"
+                        class="w-full text-left p-3 rounded-xl border border-slate-800 bg-slate-900/50 flex items-center gap-3 opacity-60 transition">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm">
+                            5</div>
+                        <div>
+                            <div class="text-sm font-semibold text-slate-200">Pitch Card</div>
+                            <div class="text-xs text-slate-400">Guion e Impacto</div>
+                        </div>
+                    </button>
+
+                </nav>
+            </div>
+
+            <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-400">
+                <i data-lucide="shield-check" class="inline w-4 h-4 text-emerald-400 mr-1"></i>
+                Privacidad Garantizada: No procesa ni almacena datos personales de estudiantes o docentes.
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- MÓDULO 1: RETO MAP -->
+                <section id="mod-1" class="space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                            <i data-lucide="compass" class="text-blue-500"></i> Módulo 1: Reto Map (Lente de
+                            Oportunidad)
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-1">Ingresa los datos iniciales de tu asignatura para
+                            clasificar el reto oficial.</p>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Asignatura / Curso
+                                Base</label>
+                            <input type="text" id="m1-course"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                                placeholder="Ej. Filosofía (HUM-102)">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Sumilla / Contenido del
+                                Sílabo</label>
+                            <textarea id="m1-syllabus" rows="3"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                                placeholder="Añade temas clave o resultados de aprendizaje del curso..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Problemática u Oportunidad
+                                Observada en Aula</label>
+                            <textarea id="m1-problem" rows="3"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                                placeholder="¿Qué dificultad enfrentan los estudiantes o docentes en entornos virtuales?"></textarea>
+                        </div>
+                        <button onclick="processModule1()"
+                            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition">
+                            <i data-lucide="cpu"></i> Analizar con IA y Clasificar en Reto Oficial
+                        </button>
+                    </div>
+
+                    <div id="m1-output"
+                        class="hidden bg-blue-950/30 border border-blue-800/50 rounded-2xl p-6 space-y-3">
+                        <div class="flex items-center gap-2 text-blue-400 font-semibold text-sm">
+                            <i data-lucide="check-circle-2"></i> Reto Seleccionado por la IA:
+                        </div>
+                        <h3 id="m1-selected-reto" class="text-xl font-bold text-white"></h3>
+                        <p id="m1-justification" class="text-sm text-slate-300"></p>
+                    </div>
+                </section>
+
+                <!-- MÓDULO 2: PROBLEM CARD (Oculto inicialmente) -->
+                <section id="mod-2" class="hidden space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                            <i data-lucide="alert-triangle" class="text-amber-500"></i> Módulo 2: Problem Card
+                            (Diagnóstico y Enfoque)
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-1">Formulación estricta de la problemática sin soluciones
+                            prematuras.</p>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                        <button onclick="processModule2()"
+                            class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition">
+                            <i data-lucide="wand-2"></i> Generar Problem Statement Riguroso y Auditar
+                        </button>
+                    </div>
+
+                    <div id="m2-output" class="hidden bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="text-lg font-bold text-amber-400">Estructura del Problema (Problem Statement):</h3>
+                        <div id="m2-statement-box"
+                            class="space-y-2 text-sm text-slate-300 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        </div>
+                        <div id="m2-audit-box" class="p-4 rounded-xl border text-xs"></div>
+                    </div>
+                </section>
+
+                <!-- MÓDULO 3, 4, 5 CONTENEDORES DINÁMICOS -->
+                <section id="mod-3" class="hidden space-y-6">
+                    <h2 class="text-2xl font-bold text-slate-100">Módulo 3: Prompt Card (Copiloto Pedagógico)</h2>
+                    <button onclick="processModule3()" class="bg-blue-600 px-4 py-2 rounded-lg">Generar Prompt
+                        Estratégico</button>
+                    <div id="m3-output" class="hidden bg-slate-950 p-6 border border-slate-800 rounded-2xl space-y-3">
+                    </div>
+                </section>
+
+                <section id="mod-4" class="hidden space-y-6">
+                    <h2 class="text-2xl font-bold text-slate-100">Módulo 4: MVP Card (Arquitecto de Prototipos)</h2>
+                    <button onclick="processModule4()" class="bg-blue-600 px-4 py-2 rounded-lg">Diseñar Flujo MVP y
+                        Rúbrica Analítica</button>
+                    <div id="m4-output" class="hidden bg-slate-950 p-6 border border-slate-800 rounded-2xl space-y-4">
+                    </div>
+                </section>
+
+                <section id="mod-5" class="hidden space-y-6">
+                    <h2 class="text-2xl font-bold text-slate-100">Módulo 5: Pitch Card (Guion e Impacto)</h2>
+                    <button onclick="processModule5()" class="bg-emerald-600 px-4 py-2 rounded-lg">Ensamblar Guion de
+                        Pitch (4 min)</button>
+                    <div id="m5-output" class="hidden bg-slate-950 p-6 border border-slate-800 rounded-2xl space-y-4">
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Script de Lógica del Frontend y Conexión Mocked/API -->
+    <script>
+        // Inicializar Iconos
+        lucide.createIcons();
+
+        // Estado del Proyecto HackReady
+        const projectState = {
+            course: '',
+            syllabus: '',
+            problemInput: '',
+            selectedReto: '',
+            problemStatement: null,
+            promptCard: '',
+            mvpCard: null,
+            pitchCard: null
+        };
+
+        function goToModule(modNumber) {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`mod-${i}`).classList.add('hidden');
+                const btn = document.getElementById(`step-btn-${i}`);
+                btn.classList.remove('border-blue-600', 'bg-blue-950/40');
+                btn.classList.add('opacity-60');
+            }
+
+            document.getElementById(`mod-${modNumber}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`step-btn-${modNumber}`);
+            activeBtn.classList.remove('opacity-60');
+            activeBtn.classList.add('border-blue-600', 'bg-blue-950/40');
+        }
+
+        // MÓDULO 1 SIMULADO / LLAMADA
+        function processModule1() {
+            projectState.course = document.getElementById('m1-course').value || 'Filosofía (HUM-102)';
+            projectState.syllabus = document.getElementById('m1-syllabus').value;
+            projectState.problemInput = document.getElementById('m1-problem').value;
+
+            // Simulación de respuesta de la IA basada en el System Prompt
+            projectState.selectedReto = 'Reto 2: Evaluación auténtica y logro de competencias';
+
+            document.getElementById('m1-selected-reto').innerText = projectState.selectedReto;
+            document.getElementById('m1-justification').innerText = 'La problemática se centra en la dificultad de medir cómo el estudiante aplica juicio crítico frente a dilemas profesionales en entornos virtuales, lo que corresponde a la demostración activa de competencias.';
+            document.getElementById('m1-output').classList.remove('hidden');
+
+            // Habilitar siguiente paso
+            document.getElementById('step-btn-2').classList.remove('opacity-60');
+        }
+
+        // MÓDULO 2 SIMULADO / LLAMADA
+        function processModule2() {
+            projectState.problemStatement = {
+                usuario: `Estudiantes de primer ciclo de ${projectState.course} y docentes evaluadores.`,
+                contexto: 'Sesiones virtuales sincrónicas y asincrónicas en LMS Canvas/Teams.',
+                evidencia: 'Puntuación en encuestas docentes de 8.90/10 en actividades aplicadas frente a la necesidad de justificación con evidencia.',
+                necesidad: 'Diseñar evaluaciones auténticas basadas en casos reales.',
+                problema: 'Las tareas tradicionales fomentan la memorización conceptual y el uso pasivo de IA.',
+                impacto: 'Mejora de la autonomía estudiantil y cumplimiento del perfil de egreso.'
+            };
+
+            const box = document.getElementById('m2-statement-box');
+            box.innerHTML = Object.entries(projectState.problemStatement)
+                .map(([k, v]) => `<p><strong class="uppercase text-amber-400">${k}:</strong> ${v}</p>`).join('');
+
+            const auditBox = document.getElementById('m2-audit-box');
+            auditBox.className = "p-4 rounded-xl border bg-emerald-950/30 border-emerald-800 text-emerald-300";
+            auditBox.innerHTML = "<strong><i data-lucide='check'></i> Auditoría de IA Aprobada:</strong> La definición del problema no contiene ninguna solución disfrazada (no exige apps ni software predeterminado).";
+
+            document.getElementById('m2-output').classList.remove('hidden');
+            lucide.createIcons();
+            document.getElementById('step-btn-3').classList.remove('opacity-60');
+        }
+
+        function processModule3() {
+            const out = document.getElementById('m3-output');
+            out.classList.remove('hidden');
+            out.innerHTML = `
+                <h3 class="font-bold text-blue-400 text-sm">Prompt Copiloto Generado para el Docente:</h3>
+                <pre class="bg-slate-900 p-4 rounded-xl text-xs text-slate-300 whitespace-pre-wrap">
+CONTEXTO: Asignatura ${projectState.course}, Módulo de Ética y Otredad.
+ROL: Diseñador instruccional experto en evaluación por competencias.
+OBJETIVO: Generar 2 variantes equivalentes de dilemas éticos profesionales breves (máx. 250 palabras) con 2 evidencias clave en el texto.
+RESTRICCIONES: No resolver el caso, no usar nombres reales.
+FORMATO: Tabla con Caso + Dilema + Evidencias + Consigna + Rúbrica de 4 criterios.
+                </pre>
+            `;
+            document.getElementById('step-btn-4').classList.remove('opacity-60');
+        }
+
+        function processModule4() {
+            const out = document.getElementById('m4-output');
+            out.classList.remove('hidden');
+            out.innerHTML = `
+                <h3 class="font-bold text-blue-400 text-sm">Flujo del MVP Demostrable (5 Pasos):</h3>
+                <ol class="list-decimal list-inside text-xs text-slate-300 space-y-1">
+                    <li>Comprender: El estudiante lee el caso breve y la rúbrica visible.</li>
+                    <li>Analizar: Selecciona 2 evidencias clave dentro del texto.</li>
+                    <li>Decidir: Fundamenta su postura con autores del curso.</li>
+                    <li>Valorar: El docente aplica la rúbrica corta de 4 criterios (0 a 2 pts).</li>
+                    <li>Mejorar: Recibe retroalimentación cualitativa inmediata.</li>
+                </ol>
+            `;
+            document.getElementById('step-btn-5').classList.remove('opacity-60');
+            document.getElementById('btn-export').classList.remove('hidden');
+        }
+
+        function processModule5() {
+            const out = document.getElementById('m5-output');
+            out.classList.remove('hidden');
+            out.innerHTML = `
+                <h3 class="font-bold text-emerald-400 text-sm">Guion del Pitch de 4 Minutos:</h3>
+                <p class="text-xs text-slate-300">0:00 - 0:45 | Problema: En la educación virtual, evaluar la verdadera capacidad crítica es un reto...</p>
+                <p class="text-xs text-slate-300">0:45 - 1:15 | Usuario: Dirigido a estudiantes de primer ciclo y docentes de ${projectState.course}.</p>
+                <p class="text-xs text-slate-300">1:15 - 3:15 | Solución y MVP: Demostración del prototipo con rúbrica analítica breve...</p>
+                <p class="text-xs text-slate-300">3:15 - 4:00 | Impacto: Cero costo en licencias, alineado a la guía GIE-UGD-INS-01.</p>
+            `;
+        }
+
+        function exportProject() {
+            const markdownContent = `# PROYECTO DE INNOVACIÓN EDUCACIÓN - HACKREADY
+## Asignatura: ${projectState.course}
+## Reto Oficial: ${projectState.selectedReto}
+
+### 1. Problem Statement
+${JSON.stringify(projectState.problemStatement, null, 2)}
+
+---
+Generado con la Fábrica de Proyectos HackReady.`;
+
+            const blob = new Blob([markdownContent], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Proyecto_HackReady_${projectState.course.replace(/[^a-zA-Z0-0]/g, '_')}.md`;
+            a.click();
+        }
+    </script>
+</body>
+
+</html>
