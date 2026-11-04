@@ -1,34 +1,19 @@
-// Archivo: src/modules/module4-mvp-card.js
-import { callGeminiAPI, SYSTEM_PROMPTS } from '../services/gemini-service.js';
-
-export function initModule4(state, onComplete) {
-    const btn = document.getElementById('m4-submit-btn');
-    if (!btn) return;
-
-    btn.onclick = async () => {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="loader" class="animate-spin w-5 h-5"></i> Diseñando flujo y rúbrica...`;
-
-        try {
-            const userPrompt = `Curso: ${state.course}\nReto: ${state.selectedReto}\nProblema: ${JSON.stringify(state.problemStatement)}`;
-            const responseText = await callGeminiAPI(SYSTEM_PROMPTS.MVP_CARD, userPrompt);
-
-            state.mvpCard = responseText;
-            const out = document.getElementById('m4-output');
-            out.classList.remove('hidden');
-            out.innerHTML = `
-        <h3 class="font-bold text-blue-400 text-sm mb-2">Arquitectura del Prototipo MVP & Rúbrica Analítica:</h3>
-        <div class="text-xs text-slate-300 whitespace-pre-wrap bg-slate-900 p-4 rounded-xl border border-slate-800">${responseText}</div>
-      `;
-
-            if (onComplete) onComplete();
-        } catch (error) {
-            console.error(error);
-            alert('Error al diseñar el MVP.');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<i data-lucide="layout" class="w-5 h-5"></i> Diseñar Flujo MVP y Rúbrica Analítica`;
-            lucide.createIcons();
-        }
-    };
+export function renderMVPCard(data) {
+    const container = document.getElementById('module4-results');
+    if (!container) return;
+    container.innerHTML = `
+    <div class="space-y-3 bg-slate-900/80 p-4 rounded-xl border border-blue-500/30 text-slate-200">
+      <h3 class="text-blue-400 font-bold mb-2">Flujo del MVP Demostrable (5 Pasos):</h3>
+      <p><strong>Usuario:</strong> ${data.usuario}</p>
+      <p><strong>Acción Principal:</strong> ${data.accionPrincipal}</p>
+      <p><strong>Respuesta del Sistema:</strong> ${data.respuestaSistema}</p>
+      <p><strong>Evidencia de Valor:</strong> ${data.evidenciaValor}</p>
+      <div class="mt-3 pt-3 border-t border-slate-700">
+        <strong>Pasos del Prototipo:</strong>
+        <ul class="list-disc pl-5 mt-1 space-y-1">
+          ${data.flujoPasos.map(paso => `<li>${paso}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
 }

@@ -3,8 +3,8 @@ import { AI_CONFIG } from '../config/ai-config.js';
 
 export const SYSTEM_PROMPTS = {
     RETO_MAP: `
-Actúa como Arquitecto Metodológico del HackReady Toolkit.
-Analiza la Asignatura, el Sílabo y el Problema ingresados por el usuario. Evalúa cuál de las 5 dimensiones del Reto Map aplica:
+Actúa como Arquitecto Metodológico del HackReady Toolkit. Analiza la Asignatura y el Problema ingresados.
+Selecciona estrictamente una de las 5 dimensiones oficiales del Reto Map:
 1. Experiencias activas y personalizadas
 2. Evaluación auténtica y logro de competencias
 3. Analítica de aprendizaje
@@ -13,13 +13,18 @@ Analiza la Asignatura, el Sílabo y el Problema ingresados por el usuario. Eval�
 
 Responde estrictamente en formato JSON válido:
 {
-  "retoSeleccionado": "Nombre exacto del reto seleccionado de la lista",
-  "justificationPedagogica": "Explicación detallada respondiendo a qué aspecto de la calidad académica está en juego y por qué se selecciona esta dimensión para el curso."
+  "retoSeleccionado": "Nombre exacto de la dimensión",
+  "justificationPedagogica": "Explicación detallada de qué aspecto de la calidad académica está en juego para esta asignatura."
 }`,
 
     PROBLEM_CARD: `
-Actúa como Auditor Metodológico de la Problem Card (HackReady).
-Analiza los datos del usuario y construye el Problem Statement estructurado obligatoriamente en 6 elementos: Usuario, Contexto, Evidencia, Necesidad, Problema e Impacto.
+Actúa como Auditor Metodológico de la Problem Card. Construye el Problem Statement desglosando obligatoriamente los 6 elementos:
+- Usuario
+- Contexto
+- Evidencia
+- Necesidad
+- Problema
+- Impacto
 Responde estrictamente en formato JSON válido:
 {
   "statement": {
@@ -32,42 +37,61 @@ Responde estrictamente en formato JSON válido:
   },
   "audit": {
     "esSolucionDisfrazada": false,
-    "feedbackAuditoria": "Evaluación rigurosa del diagnóstico enfocado en la asignatura."
+    "feedbackAuditoria": "Evaluación rigurosa del diagnóstico enfocado exclusivamente en el curso."
   }
 }`,
 
     PROMPT_CARD: `
-Actúa como Ingeniero de Prompts Educativos senior.
-Diseña de forma interactiva y profesional un Prompt Pedagógico estructurado bajo los 7 elementos obligatorios de la fórmula HackReady: CONTEXTO, ROL, OBJETIVO, INFORMACIÓN DE ENTRADA, RESTRICCIONES, FORMATO e ITERACIÓN, adaptado estrictamente al curso y problema ingresados.`,
+Actúa como Ingeniero de Prompts Educativos senior. Diseña un Prompt Pedagógico estructurado bajo los 7 elementos obligatorios de la fórmula HackReady.
+Responde estrictamente en formato JSON válido:
+{
+  "contexto": "...",
+  "rol": "...",
+  "objetivo": "...",
+  "informacion": "...",
+  "restricciones": "...",
+  "formato": "...",
+  "iteracion": "..."
+}`,
 
     MVP_CARD: `
-Actúa como Diseñador de Prototipos EdTech (MVP Card).
-Ayuda a reducir la propuesta a algo demostrable construyendo:
-1. El flujo mínimo de interacción adaptado al curso.
-2. Una Rúbrica Analítica Breve de 4 criterios.`,
+Actúa como Diseñador de Prototipos EdTech (MVP Card). Construye el prototipo demostrable.
+Responde estrictamente en formato JSON válido:
+{
+  "usuario": "...",
+  "accionPrincipal": "...",
+  "respuestaSistema": "...",
+  "evidenciaValor": "...",
+  "flujoPasos": [
+    "Paso 1: ...",
+    "Paso 2: ...",
+    "Paso 3: ...",
+    "Paso 4: ...",
+    "Paso 5: ..."
+  ]
+}`,
 
     PITCH_CARD: `
-Actúa como Coach de Presentaciones de Alto Impacto.
-Estructura un guion persuasivo de 4 minutos bajo la secuencia exacta HackReady (PROBLEMA -> USUARIO -> SOLUCIÓN -> MVP -> IMPACTO) integrando el curso y problemática actual.`
+Actúa como Coach de Presentaciones de Alto Impacto. Estructura un guion persuasivo de 4 minutos bajo la secuencia exacta HackReady.
+Responde estrictamente en formato JSON válido:
+{
+  "problema": "...",
+  "usuario": "...",
+  "solucion": "...",
+  "mvp": "...",
+  "impacto": "..."
+}`
 };
 
 export async function callGeminiAPI(systemInstruction, userContent) {
     const apiKey = AI_CONFIG.getApiKey();
-
     if (!apiKey) {
-        console.warn("Modo simulación dinámico activo (Sin API Key).");
         return simulateDynamicAIResponse(systemInstruction, userContent);
     }
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_CONFIG.DEFAULT_MODEL}:generateContent?key=${apiKey}`;
-
     const payload = {
-        contents: [
-            {
-                role: "user",
-                parts: [{ text: `${systemInstruction}\n\nDatos de entrada del usuario:\n${userContent}` }]
-            }
-        ]
+        contents: [{ role: "user", parts: [{ text: `${systemInstruction}\n\nDatos actuales del usuario:\n${userContent}` }] }]
     };
 
     try {
@@ -76,54 +100,78 @@ export async function callGeminiAPI(systemInstruction, userContent) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
         if (!response.ok) throw new Error(`Error en API Gemini: ${response.statusText}`);
-
         const data = await response.json();
-        const candidate = data.candidates?.[0];
-        if (candidate && candidate.content?.parts?.[0]?.text) {
-            return candidate.content.parts[0].text;
-        } else {
-            throw new Error("Respuesta vacía de la IA.");
-        }
+        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        // Limpiar bloques de código markdown si los trae la IA
+        const cleanJson = textresponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleanJson);
     } catch (error) {
-        console.warn("Fallo en API, utilizando simulador dinámico con datos reales:", error);
+        console.warn("Falla en API o parseo, utilizando simulador dinámico estructurado:", error);
         return simulateDynamicAIResponse(systemInstruction, userContent);
     }
 }
 
-// Simulador inteligente 100% dinámico que inyecta los datos reales del usuario (curso y problema)
 function simulateDynamicAIResponse(systemInstruction, userContent) {
     return new Promise((resolve) => {
-        // Extraer datos del userContent si es posible para hacer el mock dinámico
         setTimeout(() => {
+            const courseMatch = userContent.match(/Curso:\s*(.+?)(\||$)/i);
+            const courseName = courseMatch ? courseMatch[1].trim() : "Asignatura Académica";
+
             if (systemInstruction.includes('RETO_MAP')) {
-                resolve(JSON.stringify({
+                resolve({
                     retoSeleccionado: "Reto 2: Evaluación auténtica y logro de competencias",
-                    justificationPedagogica: `Análisis IA: Para el curso analizado, el desafío se centra en medir de forma fidedigna el juicio crítico y la transferencia de saberes frente a los problemas planteados, priorizando el desempeño activo del estudiante.`
-                }));
+                    justificationPedagogica: `Para la asignatura de ${courseName}, la calidad académica exige medir de forma fidedigna el juicio crítico y la transferencia de saberes frente a problemas reales del entorno.`
+                });
             } else if (systemInstruction.includes('PROBLEM_CARD')) {
-                resolve(JSON.stringify({
+                resolve({
                     statement: {
-                        usuario: "Estudiantes matriculados y cuerpo docente de la asignatura.",
-                        contexto: "Sesiones de aprendizaje teóricas y prácticas en plataforma virtual.",
-                        evidencia: "Dificultades observadas en la aplicación práctica de los contenidos del curso.",
-                        necesidad: "Implementar estrategias didácticas que vinculen la teoría con evidencias de desempeño.",
-                        problema: "Las metodologías convencionales promueven el aprendizaje pasivo y limitan la evaluación del pensamiento crítico.",
-                        impacto: "Mejora significativa en la adquisición de competencias clave y el perfil de egreso."
+                        usuario: `Estudiantes matriculados y cuerpo docente de ${courseName}.`,
+                        contexto: "Sesiones de aprendizaje síncronas y asíncronas en plataforma virtual.",
+                        evidencia: "Dificultades observadas en la aplicación práctica y análisis crítico de los contenidos del sílabo.",
+                        necesidad: "Implementar metodologías activas que vinculen la teoría con evidencias de desempeño.",
+                        problema: `Las estrategias convencionales en ${courseName} promueven la memorización y limitan la evaluación del razonamiento complejo.`,
+                        impacto: "Elevación del perfil de egreso y desarrollo competencias de pensamiento superior."
                     },
                     audit: {
                         esSolucionDisfrazada: false,
-                        feedbackAuditoria: "Auditoría superada: Diagnóstico enfocado rigurosamente en la problemática del curso sin sesgos tecnológicos."
+                        feedbackAuditoria: "Diagnóstico metodológico rigurosamente enfocado en la problemática del curso, libre de sesgos tecnológicos prematuros."
                     }
-                }));
+                });
             } else if (systemInstruction.includes('PROMPT_CARD')) {
-                resolve(`[CONTEXTO]: Asignatura configurada por el usuario en el Módulo 1.\n[ROL]: Copiloto pedagógico especializado en metodologías activas y pensamiento crítico.\n[OBJETIVO]: Guiar al estudiante en la resolución de casos vinculados al problema detectado.\n[INFORMACIÓN]: Insumos del sílabo y matriz de evaluación del curso.\n[RESTRICCIONES]: No otorgar respuestas directas; fomentar la argumentación basada en evidencias.\n[FORMATO]: Estructura de casos prácticos con rúbrica integrada.\n[ITERACIÓN]: Ajustar el nivel de complejidad según el progreso del estudiante.`);
+                resolve({
+                    contexto: `Asignatura: ${courseName} | Marco metodológico HackReady.`,
+                    rol: "Copiloto pedagógico especializado en aprendizaje activo y desarrollo crítico.",
+                    objetivo: "Guiar al estudiante en la resolución de casos vinculados al diagnóstico de la asignatura.",
+                    informacion: "Sílabo oficial, matriz de consistencia y evidencias de aula.",
+                    restricciones: "No otorgar soluciones directas; incentivar la argumentación basada en datos.",
+                    formato: "Casos prácticos estructurados con rúbrica integrada de evaluación.",
+                    iteracion: "Ajustar el nivel de andamiaje según el progreso del estudiante."
+                });
             } else if (systemInstruction.includes('MVP_CARD')) {
-                resolve(`FLUJO MÍNIMO DEL MVP (5 Pasos Adaptados):\n1. Presentación de la situación problemática propia de la asignatura.\n2. Análisis e identificación de evidencias clave por parte del estudiante.\n3. Formulación de la propuesta de solución argumentada.\n4. Evaluación formativa mediante rúbrica corta de 4 criterios (0-2 pts).\n5. Retroalimentación cualitativa orientada al cierre de brechas de aprendizaje.`);
+                resolve({
+                    usuario: `Estudiantes y docentes de ${courseName}`,
+                    accionPrincipal: "Analizar situación problemática y proponer solución argumentada",
+                    respuestaSistema: "Retroalimentación formativa y rúbrica analítica breve",
+                    evidenciaValor: "Evidencia de desempeño crítico documentada",
+                    flujoPasos: [
+                        "Paso 1: Presentación interactiva de la situación problemática de la asignatura.",
+                        "Paso 2: Análisis guiado e identificación de evidencias clave por el estudiante.",
+                        "Paso 3: Formulación de la propuesta de solución fundamentada.",
+                        "Paso 4: Evaluación formativa rápida mediante rúbrica analítica (0 a 2 pts).",
+                        "Paso 5: Retroalimentación cualitativa automatizada orientada al cierre de brechas."
+                    ]
+                });
             } else {
-                resolve(`GUION DE PITCH (4 Minutos - Versión Dinámica):\n- [0:00 - 0:45] PROBLEMA: ¿Cómo transformar la comprensión pasiva en capacidad de análisis crítico en nuestra asignatura?\n- [0:45 - 1:15] USUARIO: Estudiantes y docentes del curso.\n- [1:15 - 3:15] SOLUCIÓN & MVP: Prototipo centrado en actividades de evaluación auténtica y retroalimentación ágil.\n- [3:15 - 4:00] IMPACTO: Innovación escalable, de bajo costo y alineada estrictamente a las normativas institucionales.`);
+                resolve({
+                    problema: `¿Cómo transformar la comprensión pasiva en capacidad de análisis crítico en ${courseName}?`,
+                    usuario: "Estudiantes de primer ciclo y docentes de la asignatura.",
+                    solucion: "Prototipo EdTech centrado en actividades de evaluación auténtica y andamiaje cognitivo.",
+                    mvp: "Flujo mínimo interactivo de 5 pasos con validación por rúbrica analítica.",
+                    impacto: "Innovación escalable, de costo cero en licencias y alineada al modelo educativo institucional."
+                });
             }
-        }, 600);
+        }, 400);
     });
 }
